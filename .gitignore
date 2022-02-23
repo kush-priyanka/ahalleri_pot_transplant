@@ -1,0 +1,29 @@
+# Suppress R files
+.Rproj.user/
+ahalleri_pot.Rproj
+*.txt
+*.Rhistory
+
+# Suppress the following folders
+16S_analysis_PK
+16S_prelim_DL
+Chem_analysis_new
+Chem_analysis_old_wrong
+Data
+DNA_extraction
+Functional_Analysis
+Github_Rscripts
+ITS_analysis_PK
+Plots
+Test_Homegenity_old_wrong
+
+# Suppress the file
+Time_Log_Spring2022.xlsx
+
+#Suppress R scrips
+Rscripts/5-plot_outliers.R
+Rscripts/7-kruskal_test.R
+Rscripts/8-Funguild.R
+
+Suppress all pdf files
+*.pdf
