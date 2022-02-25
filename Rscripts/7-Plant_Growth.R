@@ -1,19 +1,19 @@
-# Load libraries
+## Load libraries
 library(ggplot2)
 library(dplyr)
 
-# Import Raw Data
+## Import Raw Data
 chem <- read.table("Data/Ahalleri_soil_plant_02172022.txt", 
                    header=T, row.names=1, sep="\t")
 
 chem <- chem[c(1:120),c(1:20,23:48)]
 dim(chem) #120 46
 
-# Subset only plant data
+## Subset only plant data
 plant <- subset(chem, chem$Population != "Blank")
 
-#### Plot ELA, FvFm, PI_abs over days ####
-
+#### Calculate average values ####
+## Avg of ELA, FvFm, PI_abs at soil type for each population sing for loop
 pop <- unique(plant$Population_type)
 dat1 <- data.frame()
 dat2 <- data.frame()
@@ -51,10 +51,14 @@ plant.growth_time <- rbind(dat1, dat2)
 plant.growth_time <- rbind(plant.growth_time, dat3)
 plant.growth_time$days <- as.numeric(rep(c(1,129,178), each = 16))
 plant.growth_time$Population_type <- as.character(rep(c("M_PL22_P", "M_PL27_P", 
-                                                        "NM_PL14_P", "NM_PL35_P"),each = 4))
+                                                        "NM_PL14_P", "NM_PL35_P"), each = 4))
+## Assign column names to an object
 colnames<- names(plant.growth_time)[2:4]
+
+#### Plot ELA, FvFm, PI_abs over days and Save files ####
+
 for(i in 2:4) {
-    fig_growth <- ggplot(plant.growth_time, aes(x = days, y = plant.growth_time[,i])) +
+    fig_growth <- ggplot(plant.growth_time, aes(x = days, y = plant.growth_time[, i])) +
     geom_point(aes(color =  Soil_type), size = 1.5) +
     geom_line(aes(color = Soil_type), size = 1) +
     scale_color_manual(values = c("NM_PL14_S"="#2B3990",
