@@ -22,7 +22,6 @@ Results
 Time_Log_Spring2022.xlsx
 
 #Suppress R scrips
-Rscripts/7-kruskal_test.R
 Rscripts/8-Funguild.R
 
 Suppress all pdf files

@@ -17,8 +17,8 @@ rte3 <- rte3[1:120,c(1:20,23:24,26:48)]
 colnames<- names(rte3)[7:20]
 soil_plots <- list()
 soil_plots <- lapply(7:20, function(i){
-  ggplot(rte3, aes(x = Population_type,y = rte3[,i])) +
-    geom_point() +
+  ggplot(rte3, aes(x = Soil_type,y = rte3[,i])) +
+    geom_boxplot() +
     ylab(colnames[i-6]) + 
     theme_bw() +
     theme(text = element_text(size = 8),
@@ -27,10 +27,10 @@ soil_plots <- lapply(7:20, function(i){
 })
 
 ## Display plot
-grid.arrange(grobs = soil_plots, ncol = 2) 
+grid.arrange(grobs = soil_plots, ncol = 4) 
 
 # Save Soil plots plot
-ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_outliers_02282022.pdf", 
+ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_outliers_03012022.pdf", 
        arrangeGrob(grobs = soil_plots, ncol = 4),
        width = 10,
        height = 8,
@@ -40,7 +40,7 @@ ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_outliers_02282022.pdf",
 ecotype<- list()
 ecotype <- lapply(7:20, function(i){
   ggplot(rte3, aes(x = Ecotype,y = rte3[,i])) +
-    geom_point() +
+    geom_boxplot() +
     ylab(colnames[i-6]) + 
     theme_bw() +
     theme(text = element_text(size = 8),
@@ -52,7 +52,7 @@ ecotype <- lapply(7:20, function(i){
 grid.arrange(grobs = ecotype, ncol = 4) 
 
 ## Save Soil plots plot
-ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_ecotype_02282022.pdf", 
+ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_ecotype_03012022.pdf", 
        arrangeGrob(grobs = ecotype, ncol = 4),
        width = 10,
        height = 8,
@@ -113,8 +113,8 @@ plant <- plant[, c(1:22,26:27, 23:25,46:48,40:45, 28:39)]
 colnames_plant <- names(plant)[21:36]
 plant_plots <- list()
 plant_plots <- lapply(21:36, function(i){
-  ggplot(plant, aes(x = Population_type,y = plant[,i])) +
-    geom_point() +
+  ggplot(plant, aes(x = Soil_type,y = plant[,i])) +
+    geom_boxplot() +
     ylab(colnames_plant[i-20]) + 
     theme_bw() +
     theme(text = element_text(size = 8),
@@ -126,7 +126,7 @@ plant_plots <- lapply(21:36, function(i){
 grid.arrange(grobs = plant_plots, ncol = 4) 
 
 # Save Soil plots plot
-ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_outliers_02282022.pdf", 
+ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_outliers_03012022.pdf", 
        arrangeGrob(grobs = plant_plots, ncol = 4),
        width = 10,
        height = 8,
@@ -136,7 +136,7 @@ ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_outliers_02282022.pdf",
 p.ecotype<- list()
 p.ecotype <- lapply(21:36, function(i){
   ggplot(plant, aes(x = Ecotype,y = plant[,i])) +
-    geom_point() +
+    geom_boxplot() +
     ylab(colnames_plant[i-20]) + 
     theme_bw() +
     theme(text = element_text(size = 8),
@@ -148,7 +148,7 @@ p.ecotype <- lapply(21:36, function(i){
 grid.arrange(grobs = p.ecotype, ncol = 4) 
 
 ## Save Soil plots plot
-ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_ecotype_02282022.pdf", 
+ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_ecotype_03012022.pdf", 
        arrangeGrob(grobs = p.ecotype, ncol = 4),
        width = 10,
        height = 8,
