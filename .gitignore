@@ -23,6 +23,7 @@ Time_Log_Spring2022.xlsx
 
 #Suppress R scrips
 Rscripts/8-Funguild.R
+Rscripts/9-sixteen_treatment_comparison.R
 
 Suppress all pdf files
 *.pdf

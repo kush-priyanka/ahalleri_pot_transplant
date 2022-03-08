@@ -77,7 +77,7 @@ plant.growth_time$Population_type <- factor(plant.growth_time$Population_type,
                                             levels = c("NM_PL14_P", "NM_PL35_P", "M_PL22_P", "M_PL27_P"))
 
 plant.growth_time$Soil_type <- factor(plant.growth_time$Soil_type, 
-                                      levels = c("NM_PL14_S", "NM_PL35_S","M_PL22_S","M_PL27_S" ))
+                                      levels = c("NM_PL14_S", "NM_PL35_S","M_PL22_S","M_PL27_S"))
 
 ## Assign column names to an object
 colnames<- names(plant.growth_time)[2:4]

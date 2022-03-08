@@ -6,16 +6,16 @@ library(tibble)
 library(dplyr)
 
 ## Import raw soil + plant data
-chem <- read.table("Data/Ahalleri_soil_plant_02172022.txt", 
+chem <- read.table("Data/SoilPlant_RGR_DataClean_03072022.txt", 
                    header=T, row.names=1, sep="\t")
 
 ## Subset raw soil data
-soil <- chem[, c(1:6, 19, 7:18, 20)]
+soil <- chem[, c(1:6, 8:18, 20, 19)]
 soil$Soil_type <- factor(soil$Soil_type,
                               levels = c("NM_PL14_S", "NM_PL35_S", "M_PL22_S", "M_PL27_S"))
 
 ## Import Normalized Data
-soil_norm <- read.table("Data/Soil_bestNormalize_02232022.txt", 
+soil_norm <- read.table("Data/Soil_bestNormalize_clean_data_03072022.txt", 
                    header=T, row.names=1, sep="\t")
 
 ## Add new column with order of Soil types
@@ -23,14 +23,13 @@ soil_norm$Soil_num <-with(soil_norm, ifelse(soil_norm$Soil_type == "NM_PL14_S", 
                                       ifelse(soil_norm$Soil_type == "NM_PL35_S", 'Soil2',
                                              ifelse(soil_norm$Soil_type == "M_PL22_S", 'Soil3','Soil4'))))
                                               
-#soil_woblanks <- subset(soil, soil$Population != "Blank")
 
 #### Matrix for sig letters Soil ####
-kw.matrix <- matrix(data = NA, nrow = 4, ncol = 14)
+kw.matrix <- matrix(data = NA, nrow = 4, ncol = 13)
 rownames(kw.matrix) = c(1:4)
-colnames(kw.matrix) = colnames(soil_norm[,7:20])
+colnames(kw.matrix) = colnames(soil_norm[,7:19])
 
-for(i in 7:20)
+for(i in 7:19)
 {
   bla <- kruskal(soil_norm[,i], soil_norm$Soil_num, group = T, p.adj="BH")
   bla.groups <- bla$groups
@@ -38,36 +37,70 @@ for(i in 7:20)
   kw.matrix[, i - 6] <- as.character(bla.group.ordered[,2])
   print(bla.group.ordered)
 }
+### Plot soil variables using ggplot 
+
+colnames_soil <- names(soil)[7:19]
+soil_plots <- list()
+soil_plots <- lapply(7:19, function(i){
+  ggplot(soil, aes(x = Soil_type,y = soil[,i])) +
+    geom_boxplot() +
+    ylab(colnames_soil[i-6]) + 
+    annotate( "text", x = 1, 
+              y = (max(soil[,i] + (max(soil[,i]))*0.03)), 
+              label = kw.matrix[,i-6][1])+
+    annotate( "text", x = 2, 
+              y = (max(soil[,i] +(max(soil[,i]))*0.03)), 
+              label = kw.matrix[,i-6][2])+
+    annotate( "text", x = 3, 
+              y = (max(soil[,i] +(max(soil[,i]))*0.03)), 
+              label = kw.matrix[,i-6][3])+
+    annotate( "text", x = 4, 
+              y = (max(soil[,i] +(max(soil[,i]))*0.03)), 
+              label = kw.matrix[,i-6][4])+
+    theme_bw() +
+    theme(text = element_text(size = 8),
+          axis.title.x = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1))
+})
+
+grid.arrange(grobs = soil_plots, ncol = 4)
+
+# Save Soil plots plot
+ggsave(file = "Plots/SoilChem/Soil_soil_type_KW_clean_data_ggplot_03072022.pdf", 
+       arrangeGrob(grobs = soil_plots, ncol = 4),
+       width = 10,
+       height = 10,
+       units ="in")
 
 #### Plot soil variables #### 
 ## with sig letters
-pdf("Plots/SoilChem/Soil_soil_type_KW_03012022.pdf", width = 15, height = 10)
-par(mfrow=c(4,4))
-par(mar = c(3, 5, 1, 1), oma = c( 0, 0, 0, 0)) 
-ylabels <- colnames(soil[,7:20])
-#xlabels <- c("NM_PL14_S", "NM_PL35_S", "M_PL22_S", "M_PL27_S") 
-
-for (i in 7:20) 
-{
-  boxplot(soil[,i]~ Soil_type, data = soil,xlab = NULL, ylab = ylabels[i-6], 
-          ylim = c(min(soil[,i], na.rm=T), 
-                   (max(soil[,i], na.rm=T) + (max(soil[,i], na.rm=T))*0.03)), 
-          cex.lab=1.5, cex.axis=1.2)
-  text(x = c(1:4), y = rep(max(soil[,i], na.rm=T) + max(soil[,i], na.rm=T)*0.03,4), 
-       label = as.character(kw.matrix[,i-6]), cex=1.5)
-}
-dev.off()
+# pdf("Plots/SoilChem/Soil_soil_type_KW_03072022.pdf", width = 15, height = 10)
+# par(mfrow=c(4,4))
+# par(mar = c(3, 5, 1, 1), oma = c( 0, 0, 0, 0)) 
+# ylabels <- colnames(soil[,7:20])
+# #xlabels <- c("NM_PL14_S", "NM_PL35_S", "M_PL22_S", "M_PL27_S") 
+# 
+# for (i in 7:19) 
+# {
+#   boxplot(soil[,i]~ Soil_type, data = soil,xlab = NULL, ylab = ylabels[i-6], 
+#           ylim = c(min(soil[,i], na.rm=T), 
+#                    (max(soil[,i], na.rm=T) + (max(soil[,i], na.rm=T))*0.03)), 
+#           cex.lab=1.5, cex.axis=1.2)
+#   text(x = c(1:4), y = rep(max(soil[,i], na.rm=T) + max(soil[,i], na.rm=T)*0.03,4), 
+#        label = as.character(kw.matrix[,i-6]), cex = 1.5)
+# }
+# dev.off()
 
 #### Import plant datasets ####
 ## Subset raw soil data
 plant <- subset(chem, chem$Population != "Blank")
-plant[is.na(plant)] <- 0
-plant <- plant[, c(1:20,23:24,29:30, 26:28, 49:51, 43: 48, 31:42)]
+#plant[is.na(plant)] <- 0
+plant <- plant[, c(1:6,21:36)]
 plant$Soil_type <- factor(plant$Soil_type,
                          levels = c("NM_PL14_S", "NM_PL35_S", "M_PL22_S", "M_PL27_S"))
 
 ## Import Normalized Data
-plant_norm <- read.table("Data/Plant_bestNormalize_02232022.txt", 
+plant_norm <- read.table("Data/Plant_bestNormalize_clean_data_03072022.txt", 
                          header=T, row.names=1, sep="\t")
 
 
@@ -110,24 +143,24 @@ dev.off()
 
 ### Plot plant variables using ggplot 
 
-colnames_plant <- names(plant)[21:36]
+colnames_plant <- names(plant)[7:22]
 plant_plots <- list()
-plant_plots <- lapply(21:36, function(i){
+plant_plots <- lapply(7:22, function(i){
   ggplot(plant, aes(x = Soil_type,y = plant[,i])) +
     geom_boxplot() +
-    ylab(colnames_plant[i-20]) + 
+    ylab(colnames_plant[i-6]) + 
     annotate( "text", x = 1, 
               y = (max(plant[,i] + (max(plant[,i]))*0.03)), 
-              label = kw.matrix1[,i-20][1])+
+              label = kw.matrix1[,i-6][1])+
     annotate( "text", x = 2, 
               y = (max(plant[,i] +(max(plant[,i]))*0.03)), 
-              label = kw.matrix1[,i-20][2])+
+              label = kw.matrix1[,i-6][2])+
     annotate( "text", x = 3, 
               y = (max(plant[,i] +(max(plant[,i]))*0.03)), 
-              label = kw.matrix1[,i-20][3])+
+              label = kw.matrix1[,i-6][3])+
     annotate( "text", x = 4, 
               y = (max(plant[,i] +(max(plant[,i]))*0.03)), 
-              label = kw.matrix1[,i-20][3])+
+              label = kw.matrix1[,i-6][4])+
     theme_bw() +
     theme(text = element_text(size = 8),
           axis.title.x = element_blank(),
@@ -137,7 +170,7 @@ plant_plots <- lapply(21:36, function(i){
 grid.arrange(grobs = plant_plots, ncol = 4)
 
 # Save Soil plots plot
-ggsave(file = "Plots/PlantChem/Plant_soil_type_KW_ggplot_03012022.pdf", 
+ggsave(file = "Plots/PlantChem/Plant_soil_type_KW_clean_data_ggplot_03072022.pdf", 
        arrangeGrob(grobs = plant_plots, ncol = 4),
        width = 10,
        height = 10,

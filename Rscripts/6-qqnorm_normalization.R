@@ -5,7 +5,7 @@ library(rcompanion) #TEST FOR NORMALITY + HISTOGRAMS
 library(bestNormalize) #best transformation
 
 # Import Data
-chem <- read.table("Data/Ahalleri_soil_plant_02172022.txt", 
+chem <- read.table("Data/SoilPlant_RGR_DataClean_03072022.txt", 
                    header=T, row.names=1, sep="\t")
 
 chem <- chem[1:120,c(1:20,23:48)]
@@ -66,32 +66,32 @@ plant <- plant[, c(1:22,27:28, 24:26,47:49,41:46,29:40)]
 soil <- chem[,c(1:20)]
 dim(soil)
 
-pdf("Plots/SoilChem/Soil_qqnorm_02232022.pdf", width = 15, height = 10)
+pdf("Plots/SoilChem/Soil_normalization/Soil_qqnorm_clean_data_03072022.pdf", width = 15, height = 10)
 par(mfrow=c(2,7))
-colnames_qqnorm <- c("Dry weight (%)" ,"Acid Phosphatase","Alkaline Phosphatase","B_glucosidase","Arylsulfatase",
+colnames_qqnorm <- c("Acid Phosphatase","Alkaline Phosphatase","B_glucosidase","Arylsulfatase",
                      "Cadmium", "Lead", "Zinc","pH","Ammonium", "Nitrate", "WHC", "Basal respiration", "C mic")
-for (i in 7:20) 
+for (i in 8:20) 
 {
-  qqnorm(soil[,i],main = colnames_qqnorm[i-6])
+  qqnorm(soil[,i],main = colnames_qqnorm[i-7])
   qqline(soil[,i])
 }
 dev.off()
 
 #### Test for normality and histograms soil #####
-shapi.p <- matrix (data = NA, ncol = 14, nrow = 1)
-colnames (shapi.p) <- colnames(soil[,7:20])
+shapi.p <- matrix (data = NA, ncol = 13, nrow = 1)
+colnames (shapi.p) <- colnames(soil[,8:20])
 
-for (i in 7:20) 
+for (i in 8:20) 
 {
-  shapi.p[1,i-6] <- as.numeric(shapiro.test(soil[,i])$p.value)
+  shapi.p[1,i-7] <- as.numeric(shapiro.test(soil[,i])$p.value)
 }
 shapi.p.round <- round(shapi.p, digits = 4)
 
-pdf("Plots/SoilChem/Soil_histograms_shapi_p_02232022.pdf", width = 15, height = 10)
+pdf("Plots/SoilChem/Soil_histograms_shapi_p_clean_data_03072022.pdf", width = 15, height = 10)
 par(mfrow=c(2,7))
-for (i in 7:20) 
+for (i in 8:20) 
 {
-  plotNormalHistogram(soil[,i], main = paste(colnames_qqnorm[i-6], shapi.p.round[i-6]))     
+  plotNormalHistogram(soil[,i], main = paste(colnames_qqnorm[i-7], shapi.p.round[i-7]))     
 }
 dev.off()
 
@@ -99,35 +99,35 @@ dev.off()
 soil_non_norm <- soil[, c(1:18, 20)]
 
 #### Choose Best transformation Soil ####
-soil_trans <- matrix (data = NA, ncol = ncol(soil_non_norm[,7:19]), nrow = nrow(soil_non_norm))
-colnames (soil_trans) <- colnames(soil_non_norm[,7:19])
+soil_trans <- matrix (data = NA, ncol = ncol(soil_non_norm[,8:19]), nrow = nrow(soil_non_norm))
+colnames (soil_trans) <- colnames(soil_non_norm[,8:19])
 
-for (i in 7:19) 
+for (i in 8:19) 
 {
   x <- soil_non_norm[,i]
   (BNobject <- bestNormalize(x))
-  soil_trans[,i-6]<-predict(BNobject)
+  soil_trans[,i-7]<-predict(BNobject)
 }
 
-shapi.p_trans <- matrix (data = NA, ncol = 13, nrow = 1)
-colnames (shapi.p_trans) <- colnames(soil_non_norm[,7:19])
+shapi.p_trans <- matrix (data = NA, ncol = 12, nrow = 1)
+colnames (shapi.p_trans) <- colnames(soil_non_norm[,8:19])
 
-for (i in 1:13) 
+for (i in 1:12) 
 {
   shapi.p_trans[1,i] <- as.numeric(shapiro.test(soil_trans[,i])$p.value)
 }
 shapi.p.round_trans <- round(shapi.p_trans, digits = 3)
 
-soil_trans_final <- cbind(soil[,c(1:6,19)], soil_trans)
-write.table(soil_trans_final, file = "Data/Soil_bestNormalize_02232022.txt", 
+soil_trans_final <- cbind(soil[,1:6], soil_trans, soil[,19])
+write.table(soil_trans_final, file = "Data/Soil_bestNormalize_clean_data_03072022.txt", 
             sep="\t", quote=F, row.names=T, col.names=NA)
 
-colnames_soil_trans <- c("Dry weight (%)" ,"Acid Phosphatase","Alkaline Phosphatase","B_glucosidase","Arylsulfatase",
+colnames_soil_trans <- c("Acid Phosphatase","Alkaline Phosphatase","B_glucosidase","Arylsulfatase",
                    "Cadmium", "Lead","Zinc","pH","Ammonium", "Nitrate", "WHC","C mic")
 
-pdf("Plots/SoilChem/Soil_bestNormilize_histograms_02232022.pdf", width = 15, height = 10)
+pdf("Plots/SoilChem/Soil_normalization/Soil_bestNormilize_histograms_clean_data_03072022.pdf", width = 15, height = 10)
 par(mfrow=c(2,7))
-for (i in 1:13) 
+for (i in 1:12) 
 {
   plotNormalHistogram(soil_trans[,i], 
                       main = paste(colnames_soil_trans[i], 
@@ -136,9 +136,9 @@ for (i in 1:13)
 dev.off()
 
 #### Plot normalized qqnorm and qqline Soil #####
-pdf("Plots/SoilChem/Soil_BestNormalize_qqnorm_02232022.pdf", width = 15, height = 10)
+pdf("Plots/SoilChem/Soil_normalization/Soil_BestNormalize_qqnorm_clean_data_03072022.pdf", width = 15, height = 10)
 par(mfrow=c(2,7))
-for (i in 1:13) 
+for (i in 1:12) 
 {
   qqnorm(soil_trans[,i],main = colnames_soil_trans[i])
   qqline(soil_trans[,i])
@@ -147,7 +147,7 @@ dev.off()
 
 #### qqnorm and qqline Plant ####
 
-pdf("Plots/PlantChem/Plant_qqnorm_02232022.pdf", width = 15, height = 10)
+pdf("Plots/PlantChem/plant_normalization/Plant_qqnorm_clean_data_03072022.pdf", width = 15, height = 10)
 par(mfrow=c(2,7))
 colnames_qqnorm <- c("Plant fresh Biomass" ,"Plant dry Biomass",
                      "Plant Cadmium","Plant Zinc", "Easy Leaf Area T0","Easy Leaf Area T1","Easy Leaf Area T2",
@@ -172,7 +172,7 @@ for (i in 21:36)
 }
 shapi.p.round <- round(shapi.p, digits = 4)
 
-pdf("Plots/PlantChem/Plant_histograms_02232022.pdf", width = 15, height = 10)
+pdf("Plots/PlantChem/plant_normalization/Plant_histograms_clean_data_03072022.pdf", width = 15, height = 10)
 par(mfrow=c(2,7))
 for (i in 21:36) 
 {
@@ -203,10 +203,8 @@ for (i in 1:16)
 shapi.p.round_trans <- round(shapi.p_trans, digits = 3)
 
 plant_trans_final <- cbind(plant[,1:6], plant_trans, plant[, 37:46])
-write.table(plant_trans_final, file = "Data/Plant_bestNormalize_02232022.txt", 
+write.table(plant_trans_final, file = "Data/Plant_bestNormalize_clean_data_03072022.txt", 
             sep="\t", quote=F, row.names=T, col.names=NA)
-   #         sep = "\t", col.names = T, row.names = T, quote = F, na = "NA", dec = ".")
-
 
 colnames_plant_trans <- c("Plant fresh Biomass" ,"Plant dry Biomass",
                           "Plant Cadmium","Plant Zinc", "Easy Leaf Area T0","Easy Leaf Area T1","Easy Leaf Area T2",
@@ -215,7 +213,7 @@ colnames_plant_trans <- c("Plant fresh Biomass" ,"Plant dry Biomass",
                           "PI_abs_T0", "PI_abs_T1", "PI_abs_T2")
 
 
-pdf("Plots/PlantChem/Plant_bestNormilize_histograms_02232022.pdf.pdf", width = 15, height = 10)
+pdf("Plots/PlantChem/plant_normalization/Plant_bestNormilize_histograms_clean_data_03072022.pdf", width = 15, height = 10)
 par(mfrow=c(2,7))
 for (i in 1:16) 
 {
@@ -226,7 +224,7 @@ for (i in 1:16)
 dev.off()
 
 #### Plot normalized qqnorm and qqline Plant #####
-pdf("Plots/PlantChem/Plant_BestNormalize_qqnorm_02232022.pdf", width = 15, height = 10)
+pdf("Plots/PlantChem/plant_normalization/Plant_BestNormalize_qqnorm_clean_data_03072022.pdf", width = 15, height = 10)
 par(mfrow=c(2,7))
 for (i in 1:16) 
 {
