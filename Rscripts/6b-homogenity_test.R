@@ -2,11 +2,10 @@
 library(car) # for leveneTest
 
 # Import Raw Data
-chem <- read.table("Data/SoilPlant_RGR_DataClean_03072022.txt", 
-                   header=T, row.names=1, sep="\t")
+chem <- read.table("Data/SoilPlant_RGR_DataClean_03142022.txt", 
+                   header = T, row.names = 1, sep = "\t")
 
-chem <- chem[c(1:120),c(1:20,23:48)]
-dim(chem) #120 46
+dim(chem) #120 49
 
 ##### Homegenity tests on raw Soil data ####
 #####  Bartlett test for soil data #####
@@ -102,15 +101,15 @@ for (i in 21:36)
 plant.hom <- rbind(bart.plant  , lev.plant)
 
 # Import normalized files
-soil.norm <- read.table("Data/Soil_bestNormalize_clean_data_03072022.txt", 
-                   header=T, row.names=1, sep="\t")
-dim(soil.norm) #120 20
+soil.norm <- read.table("Data/Soil_bestNormalize_clean_data_04062022.txt", 
+                   header = T, row.names = 1, sep = "\t")
+dim(soil.norm) #120 19
 
 # Rearrange soil.norm columns to match raw data
-soil.norm <- soil.norm[,c(1:17, 20, 18)]
+soil.norm <- soil.norm[,c(1:17, 19, 18)]
 
-plant.norm <- read.table("Data/Plant_bestNormalize_clean_data_03072022.txt", 
-                        header=T, row.names=1, sep="\t")
+plant.norm <- read.table("Data/Plant_bestNormalize_clean_data_04062022.txt", 
+                        header = T, row.names = 1, sep = "\t")
 dim(plant.norm) #80 32
 
 
@@ -147,8 +146,8 @@ soil.hom.final <- t(soil.hom[c(1,3,2,4),])
 soil.hom.final <- round(soil.hom.final, digits = 6)
 
 # Save the results
-write.table(soil.hom.final, file = "Results/Soil_Plant/Soil_Homogenity_Variance_clean_data_03072022.txt", 
-            sep="\t", quote=F, row.names=T, col.names=NA)
+write.table(soil.hom.final, file = "Results/Soil_Plant/Soil_Homogenity_Variance_clean_data_04062022.txt", 
+            sep="\t", quote = F, row.names = T, col.names = NA)
 
 ##### Homegenity tests on normalized Plant data ####
 #####  Bartlett test for norm plant data #####
@@ -180,5 +179,5 @@ plant.hom.final <- t(plant.hom[c(1,3,2,4),])
 plant.hom.final <- round(plant.hom.final, digits = 6)
 
 # Save the results
-write.table(plant.hom.final, file = "Results/Soil_Plant/Plant_Homogenity_Variance_clean_data_03072022.txt", 
-            sep="\t", quote=F, row.names=T, col.names=NA)
+write.table(plant.hom.final, file = "Results/Soil_Plant/Plant_Homogenity_Variance_clean_data_04062022.txt", 
+            sep = "\t", quote = F, row.names = T, col.names = NA)
