@@ -7,7 +7,7 @@ library(ggplot2)
 library(gridExtra) #multiple panels in 1 figure
 
 # Import Data
-rte3 <- read.table("Data/SoilPlant_RGR_DataClean_03072022.txt", 
+rte3 <- read.table("Data/SoilPlant_RGR_DataClean_04062022.txt", 
                    header=T, row.names=1, sep="\t")
 
 #### Soil Outliers Graph ####
@@ -28,7 +28,7 @@ soil_plots <- lapply(8:20, function(i){
 grid.arrange(grobs = soil_plots, ncol = 4) 
 
 # Save Soil plots plot
-ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_outliers_clean_data_03072022.pdf", 
+ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_outliers_clean_data_04062022.pdf", 
        arrangeGrob(grobs = soil_plots, ncol = 4),
        width = 10,
        height = 8,
@@ -50,7 +50,7 @@ ecotype <- lapply(8:20, function(i){
 grid.arrange(grobs = ecotype, ncol = 4) 
 
 ## Save Soil plots plot
-ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_ecotype_clean_data_03072022.pdf", 
+ggsave(file = "Plots/SoilChem/Soil_outliers/Soil_ecotype_clean_data_04062022.pdf", 
        arrangeGrob(grobs = ecotype, ncol = 4),
        width = 10,
        height = 8,
@@ -122,7 +122,7 @@ plant_plots <- lapply(21:36, function(i){
 grid.arrange(grobs = plant_plots, ncol = 4) 
 
 # Save Soil plots plot
-ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_outliers_clean_data_03072022.pdf", 
+ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_outliers_clean_data_04062022.pdf", 
        arrangeGrob(grobs = plant_plots, ncol = 4),
        width = 10,
        height = 8,
@@ -144,7 +144,7 @@ p.ecotype <- lapply(21:36, function(i){
 grid.arrange(grobs = p.ecotype, ncol = 4) 
 
 ## Save Soil plots plot
-ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_ecotype_clean_data_03072022.pdf", 
+ggsave(file = "Plots/PlantChem/Plant_outliers/Plant_outliers_ecotype_clean_data_04062022.pdf", 
        arrangeGrob(grobs = p.ecotype, ncol = 4),
        width = 10,
        height = 8,
