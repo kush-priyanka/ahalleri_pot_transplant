@@ -17,13 +17,15 @@ ITS_analysis_PK
 Plots
 Test_Homegenity_old_wrong
 Results
+Soil_Chem_Analysis_ABK
 
 # Suppress the file
 Time_Log_Spring2022.xlsx
+Enzymes.xlsx
 
 #Suppress R scrips
 Rscripts/8-Funguild.R
-Rscripts/9-sixteen_treatment_comparison.R
+Rscripts/10-Reaction_Norms.R
 
 Suppress all pdf files
 *.pdf
