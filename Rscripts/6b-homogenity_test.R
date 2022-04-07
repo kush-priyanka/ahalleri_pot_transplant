@@ -2,7 +2,7 @@
 library(car) # for leveneTest
 
 # Import Raw Data
-chem <- read.table("Data/SoilPlant_RGR_DataClean_03142022.txt", 
+chem <- read.table("Data/SoilPlant_RGR_DataClean_04062022.txt", 
                    header = T, row.names = 1, sep = "\t")
 
 dim(chem) #120 49

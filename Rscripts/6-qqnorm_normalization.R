@@ -5,7 +5,7 @@ library(rcompanion) #TEST FOR NORMALITY + HISTOGRAMS
 library(bestNormalize) #best transformation
 
 # Import Data
-chem <- read.table("Data/SoilPlant_RGR_DataClean_03142022.txt", 
+chem <- read.table("Data/SoilPlant_RGR_DataClean_04062022.txt", 
                    header=T, row.names=1, sep="\t")
 
 dim(chem) #120 49
