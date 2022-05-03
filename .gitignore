@@ -26,6 +26,7 @@ Enzymes.xlsx
 
 #Suppress R scrips
 Rscripts/8-Funguild.R
+Rscripts/12-Reaction_Norms_test.R
 
 
 Suppress all pdf files
