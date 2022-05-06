@@ -22,7 +22,7 @@ Arabidopsis_clonal_pot_ABK
 
 # Suppress the file
 Time_Log_Spring2022.xlsx
-Enzymes.xlsx
+Enzymes_function.xlsx
 
 #Suppress R scrips
 Rscripts/8-Funguild.R
