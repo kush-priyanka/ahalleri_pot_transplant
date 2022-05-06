@@ -4,6 +4,9 @@ library(agricolae)
 library(gridExtra)
 library(tibble)
 library(dplyr)
+library(dendextend)
+library(circlize)
+library(ComplexHeatmap)
 
 #### FAPROTAX Analysis ####
 ## Import Rarefied file: Bac/Arch rarefied file
@@ -58,7 +61,7 @@ write.table(map.faprotax, file="Ahalleri_16S_Mapping_faprotax_results_propor_031
 
 #### Statistical Test ####
 ## Import file wo blank soils and remove any funguild with colSum = 0
-map.faprotax <- read.table("Ahalleri_16S_Mapping_faprotax_results_propor_woblaks_05052022.txt", 
+map.faprotax <- read.table("Functional_Analysis/FAPROTAX/Ahalleri_16S_Mapping_faprotax_results_propor_woblaks_05052022.txt", 
                            sep = "\t", header = T, row.names = 1)
 dim(map.faprotax) # 80 51
 
@@ -202,4 +205,90 @@ grid.arrange(plots[[33]],plots[[34]],plots[[35]],plots[[36]],
               ncol = 2)
 dev.off()
 
+#### Hetamap ####
+## For loop to calculate mean for each treatment
+treat <- unique(map.faprotax$Group)
+func_ratio <- data.frame()
+
+for(t in treat) {
+  func <- map.faprotax  %>%
+    group_by(Group) %>%
+    summarize(methanotrophy = mean(methanotrophy),
+              methanol_oxidation = mean(methanol_oxidation),
+              methylotrophy = mean(methylotrophy),
+              aerobic_ammonia_oxidation = mean (aerobic_ammonia_oxidation),
+              nitrification = mean(nitrification),
+              sulfate_respiration = mean(sulfate_respiration),
+              respiration_of_sulfur_compounds  = mean(respiration_of_sulfur_compounds),
+              nitrate_denitrification = mean(nitrate_denitrification),
+              nitrite_denitrification = mean(nitrite_denitrification),
+              nitrous_oxide_denitrification = mean(nitrous_oxide_denitrification),
+              denitrification = mean(denitrification),
+              chitinolysis = mean(chitinolysis),
+              nitrogen_fixation  = mean(nitrogen_fixation),
+              nitrite_respiration = mean(nitrite_respiration),
+              cellulolysis = mean(cellulolysis),
+              dark_oxidation_of_sulfur_compounds  = mean(dark_oxidation_of_sulfur_compounds),
+              fermentation = mean(fermentation),
+              aerobic_chemoheterotrophy = mean(aerobic_chemoheterotrophy),
+              chemoheterotrophy = mean(chemoheterotrophy),
+              aromatic_hydrocarbon_degradation = mean(aromatic_hydrocarbon_degradation),
+              aromatic_compound_degradation = mean(aromatic_compound_degradation),
+              aliphatic_non_methane_hydrocarbon_degradation = mean(aliphatic_non_methane_hydrocarbon_degradation),
+              hydrocarbon_degradation = mean(hydrocarbon_degradation),
+              iron_respiration = mean(iron_respiration),
+              nitrate_respiration = mean(nitrate_respiration),
+              nitrogen_respiration = mean(nitrogen_respiration),
+              anoxygenic_photoautotrophy_S_oxidizing = mean(anoxygenic_photoautotrophy_S_oxidizing),
+              aerobic_anoxygenic_phototrophy = mean(aerobic_anoxygenic_phototrophy),
+              anoxygenic_photoautotrophy = mean(anoxygenic_photoautotrophy),
+              photoautotrophy = mean(photoautotrophy),
+              photoheterotrophy = mean(photoheterotrophy),
+              phototrophy = mean(phototrophy),
+              ureolysis = mean(ureolysis))
+  func_ratio <- data.frame(func)
+}
+
+options(scipen = 999)
+
+## write out the file with averages per group
+write.table(func_ratio,
+            file = "Results/Faprotax_Selected_Functions_AvgProportion_050622022.txt",
+            sep = "\t", quote = F, row.names = T, col.names = NA)
+
+### Heatmap at treatment level ###
+my_matrix <- as.matrix(func_ratio[, c(2:34)])
+rownames(my_matrix) <- func_ratio$Group
+
+col_fun = colorRamp2(c(0, 0.001, 0.005, 0.15), c("white", "yellow", "orange", "red"))
+# row_dend = as.dendrogram(hclust(dist(my_matrix)))
+
+pdf("Plots/Faprotax/Ahalleri__Faprotax_cluster_treatment_05062022.pdf",
+    width = 12, height = 8)
+Heatmap(my_matrix,
+        cluster_columns = FALSE,
+        col = col_fun,
+        rect_gp = gpar(col = "darkgray", lwd = 1),
+        row_dend_width =  unit(2, "cm"),
+        column_names_gp = grid::gpar(fontsize = 8.5),
+        row_names_gp = grid::gpar(fontsize = 9))
+dev.off()
+
+## Sample level
+matrix <- as.matrix(map.faprotax[, c(12:29, 51, 33:40, 44:50)])
+rownames(matrix) <- map.faprotax$Group
+
+row_dend1 = as.dendrogram(hclust(dist(matrix)))
+
+pdf("Plots/Faprotax/Ahalleri_Faprotax_cluster_sample_05062022.pdf",
+    width = 10, height = 9)
+Heatmap(matrix,
+        cluster_columns = FALSE,
+        col = col_fun,
+        rect_gp = gpar(col = "darkgray", lwd = 1),
+        column_names_gp = grid::gpar(fontsize = 7.5),
+        row_names_gp = grid::gpar(fontsize = 4.5),
+        # row_km = 2,
+        row_dend_width =  unit(2, "cm"))
+dev.off()
 

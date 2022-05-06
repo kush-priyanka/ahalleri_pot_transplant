@@ -4,6 +4,9 @@ library(agricolae)
 library(gridExtra)
 library(tibble)
 library(dplyr)
+library(dendextend)
+library(circlize)
+library(ComplexHeatmap)
 
 #### Funguild analysis ####
 ## Import Rarefied file: Bac/Arch rarefied file
@@ -120,7 +123,7 @@ for(i in 12:96)
   bla.group.ordered <- bla.groups[order(as.character(row.names(bla.groups))),]
   bla.group.ordered <- bla.group.ordered[c(1,9:16,2:8),]
   kw.matrix[, i - 11] <- as.character(bla.group.ordered[,2])
-  print(bla.group.ordered)
+  # print(bla.group.ordered)
 }
 
 write.table(kw.matrix, file = "Results/ahalleriITS_funguild_KW_05052022.txt", 
@@ -128,7 +131,7 @@ write.table(kw.matrix, file = "Results/ahalleriITS_funguild_KW_05052022.txt",
 
 ## Subset the significantly different guilds ###
 kw.matrix1 <- kw.matrix[, c(2, 4:15, 17:26, 29:33, 37, 39:48, 50:55, 57:64, 67, 70:74, 76:85)]
-fungi <- cbind(funguild_woblanks[, 1:11], funguild_woblanks[, colnames(kw.subset)])
+fungi <- cbind(funguild_woblanks[, 1:11], funguild_woblanks[, colnames(kw.matrix1)])
 
 #### Plot funguild groups using ggplot ####
 colnames_fungi  <- names(fungi)[12:80]
@@ -192,47 +195,180 @@ plots <- lapply(12:80, function(i){
           axis.text.x = element_text(angle = 45, hjust = 1))
 })
 
-pdf("Plots/Funguild/Funguild_KW1_05052022.pdf", width = 14, height = 10)
+pdf("Plots/Funguild/Funguild_KW1_05062022.pdf", width = 14, height = 10)
 grid.arrange(plots[[1]],plots[[2]],plots[[3]],plots[[4]], 
              plots[[5]],plots[[6]],plots[[7]],plots[[8]],
              plots[[9]],plots[[10]],plots[[11]],plots[[12]], ncol = 3)
 dev.off()
 
-pdf("Plots/Funguild/Funguild_KW2_05052022.pdf", width = 14, height = 10)
+pdf("Plots/Funguild/Funguild_KW2_05062022.pdf", width = 14, height = 10)
 grid.arrange(plots[[13]],plots[[14]],plots[[15]],plots[[16]], 
              plots[[17]],plots[[18]],plots[[19]],plots[[20]],
              plots[[21]],plots[[22]],plots[[23]],plots[[24]], ncol = 3)
 dev.off()
 
 
-pdf("Plots/Funguild/Funguild_KW3_05052022.pdf", width = 14, height = 10)
+pdf("Plots/Funguild/Funguild_KW3_05062022.pdf", width = 14, height = 10)
 grid.arrange(plots[[25]],plots[[26]],plots[[27]],plots[[28]], 
              plots[[29]],plots[[30]],plots[[31]],plots[[32]],
              plots[[33]],plots[[34]],plots[[35]],plots[[36]], ncol = 3)
 dev.off()
 
-pdf("Plots/Funguild/Funguild_KW4_05052022.pdf", width = 14, height = 10)
+pdf("Plots/Funguild/Funguild_KW4_05062022.pdf", width = 14, height = 10)
 grid.arrange(plots[[37]],plots[[38]],plots[[39]],plots[[40]], 
              plots[[41]],plots[[42]],plots[[43]],plots[[44]],
              plots[[45]],plots[[46]],plots[[47]],plots[[48]], ncol = 3)
 dev.off()
 
-pdf("Plots/Funguild/Funguild_KW5_05052022.pdf", width = 14, height = 10)
+pdf("Plots/Funguild/Funguild_KW5_05062022.pdf", width = 14, height = 10)
 grid.arrange(plots[[49]],plots[[50]],plots[[51]],plots[[52]], 
              plots[[53]],plots[[54]],plots[[55]],plots[[56]],
              plots[[57]],plots[[58]],plots[[59]],plots[[60]], ncol = 3)
 dev.off()
 
-pdf("Plots/Funguild/Funguild_KW6_05052022.pdf", width = 14, height = 10)
+pdf("Plots/Funguild/Funguild_KW6_05062022.pdf", width = 14, height = 10)
 grid.arrange(plots[[61]],plots[[62]],plots[[63]],plots[[64]], 
              plots[[65]],plots[[66]],plots[[67]],plots[[68]],
              plots[[69]], ncol = 3)
 dev.off()
 
 
-pdf("Plots/Funguild/Funguild_Selected_Funguild_05052022.pdf", width = 14, height = 10)
+pdf("Plots/Funguild/Funguild_Selected_Funguild_05062022.pdf", width = 14, height = 10)
 grid.arrange(plots[[16]],plots[[29]],plots[[37]],plots[[48]], 
              plots[[49]],plots[[55]],plots[[58]],plots[[59]],
              plots[[62]], plots[[64]],plots[[69]],ncol = 3)
 dev.off()
 
+#### Hetamap ####
+kw.matrix2 <- kw.matrix[, c(19:21, 25:26, 28:32, 34:37, 39:40, 42, 44, 46, 49:54, 59:60, 63, 67, 69, 71, 73:75, 77, 79:83, 85)]
+fungi1 <- cbind(funguild_woblanks[, 1:11], funguild_woblanks[, colnames(kw.matrix2)])
+
+## For loop to calculate mean for each treatment
+treat <- unique(fungi1$Group)
+func_ratio <- data.frame()
+
+for(t in treat) {
+  func <- fungi1  %>%
+    group_by(Group) %>%
+    summarize(Arbuscular.Mycorrhizal = mean(Arbuscular.Mycorrhizal),
+              Bryophyte.Parasite.Dung.Saprotroph.Ectomycorrhizal.Fungal.Parasite.Leaf.Saprotroph.Plant.Parasite.Undefined.Saprotroph.Wood.Saprotroph = mean(Bryophyte.Parasite.Dung.Saprotroph.Ectomycorrhizal.Fungal.Parasite.Leaf.Saprotroph.Plant.Parasite.Undefined.Saprotroph.Wood.Saprotroph),
+              Bryophyte.Parasite.Ectomycorrhizal.Ericoid.Mycorrhizal.Undefined.Saprotroph = mean(Bryophyte.Parasite.Ectomycorrhizal.Ericoid.Mycorrhizal.Undefined.Saprotroph),
+              Dung.Saprotroph = mean (Dung.Saprotroph),
+              Dung.Saprotroph.Ectomycorrhizal = mean(Dung.Saprotroph.Ectomycorrhizal),
+              Dung.Saprotroph.Ectomycorrhizal.Soil.Saprotroph.Wood.Saprotroph = mean(Dung.Saprotroph.Ectomycorrhizal.Soil.Saprotroph.Wood.Saprotroph),
+              Dung.Saprotroph.Endophyte.Litter.Saprotroph.Undefined.Saprotroph  = mean(Dung.Saprotroph.Endophyte.Litter.Saprotroph.Undefined.Saprotroph),
+              Dung.Saprotroph.Endophyte.Plant.Pathogen.Undefined.Saprotroph = mean(Dung.Saprotroph.Endophyte.Plant.Pathogen.Undefined.Saprotroph),
+              Dung.Saprotroph.Endophyte.Undefined.Saprotroph = mean(Dung.Saprotroph.Endophyte.Undefined.Saprotroph),
+              Dung.Saprotroph.Plant.Parasite.Soil.Saprotroph.Undefined.Saprotroph.Wood.Saprotroph = mean(Dung.Saprotroph.Plant.Parasite.Soil.Saprotroph.Undefined.Saprotroph.Wood.Saprotroph),
+              Dung.Saprotroph.Plant.Saprotroph.Wood.Saprotroph = mean(Dung.Saprotroph.Plant.Saprotroph.Wood.Saprotroph),
+              Dung.Saprotroph.Undefined.Saprotroph = mean(Dung.Saprotroph.Undefined.Saprotroph),
+              Dung.Saprotroph.Wood.Saprotroph  = mean(Dung.Saprotroph.Wood.Saprotroph),
+              Ectomycorrhizal = mean(Ectomycorrhizal),
+              Ectomycorrhizal.Fungal.Parasite  = mean(Ectomycorrhizal.Fungal.Parasite),
+              Ectomycorrhizal.Fungal.Parasite.Plant.Pathogen.Wood.Saprotroph = mean(Ectomycorrhizal.Fungal.Parasite.Plant.Pathogen.Wood.Saprotroph),
+              Ectomycorrhizal.Fungal.Parasite.Soil.Saprotroph.Undefined.Saprotroph = mean(Ectomycorrhizal.Fungal.Parasite.Soil.Saprotroph.Undefined.Saprotroph),
+              Ectomycorrhizal.Undefined.Saprotroph = mean(Ectomycorrhizal.Undefined.Saprotroph),
+              Endophyte = mean(Endophyte),
+              Endophyte.Lichen.Parasite.Plant.Pathogen.Undefined.Saprotroph = mean(Endophyte.Lichen.Parasite.Plant.Pathogen.Undefined.Saprotroph),
+              Endophyte.Lichen.Parasite.Undefined.Saprotroph = mean(Endophyte.Lichen.Parasite.Undefined.Saprotroph),
+              Endophyte.Litter.Saprotroph.Soil.Saprotroph.Undefined.Saprotroph = mean(Endophyte.Litter.Saprotroph.Soil.Saprotroph.Undefined.Saprotroph),
+              Endophyte.Plant.Pathogen = mean(Endophyte.Plant.Pathogen),
+              Endophyte.Plant.Pathogen.Undefined.Saprotroph = mean(Endophyte.Plant.Pathogen.Undefined.Saprotroph),
+              Endophyte.Plant.Pathogen.Wood.Saprotroph = mean(Endophyte.Plant.Pathogen.Wood.Saprotroph),
+              Ericoid.Mycorrhizal = mean(Ericoid.Mycorrhizal),
+              Fungal.Parasite = mean(Fungal.Parasite),
+              Fungal.Parasite.Plant.Pathogen.Plant.Saprotroph = mean(Fungal.Parasite.Plant.Pathogen.Plant.Saprotroph),
+              Leaf.Saprotroph.Plant.Pathogen.Undefined.Saprotroph.Wood.Saprotroph = mean(Leaf.Saprotroph.Plant.Pathogen.Undefined.Saprotroph.Wood.Saprotroph),
+              Lichenized.Undefined.Saprotroph = mean(Lichenized.Undefined.Saprotroph),
+              Litter.Saprotroph.Soil.Saprotroph.Wood.Saprotroph = mean(Litter.Saprotroph.Soil.Saprotroph.Wood.Saprotroph),
+              Orchid.Mycorrhizal = mean(Orchid.Mycorrhizal),
+              Plant.Pathogen = mean(Plant.Pathogen),
+              Plant.Pathogen.Plant.Saprotroph = mean(Plant.Pathogen.Plant.Saprotroph),
+              Plant.Pathogen.Wood.Saprotroph = mean(Plant.Pathogen.Wood.Saprotroph),
+              Plant.Saprotroph.Wood.Saprotroph = mean(Plant.Saprotroph.Wood.Saprotroph),
+              Soil.Saprotroph = mean(Soil.Saprotroph),
+              Soil.Saprotroph.Undefined.Saprotroph = mean(Soil.Saprotroph.Undefined.Saprotroph),
+              Undefined.Saprotroph = mean(Undefined.Saprotroph),
+              Undefined.Saprotroph.Undefined.Symbiotroph = mean(Undefined.Saprotroph.Undefined.Symbiotroph),
+              Wood.Saprotroph = mean(Wood.Saprotroph))
+  func_ratio <- data.frame(func)
+}
+
+options(scipen = 999)
+
+## write out the file with averages per group
+write.table(func_ratio,
+            file = "Results/Funguild_Selected_Functions_AvgProportion_050622022.txt",
+            sep = "\t", quote = F, row.names = T, col.names = NA)
+
+### Heatmap at treatment level ###
+my_matrix <- as.matrix(func_ratio[, c(2:42)])
+rownames(my_matrix) <- func_ratio$Group
+
+col_fun = colorRamp2(c(0, 0.001, 0.005, 0.15), c("white", "yellow", "orange", "red"))
+# row_dend = as.dendrogram(hclust(dist(my_matrix)))
+
+pdf("Plots/Funguild/Ahalleri_Funguild_cluster_treatment_05062022.pdf",
+    width = 12, height = 9)
+Heatmap(my_matrix,
+        cluster_columns = FALSE,
+        col = col_fun,
+        rect_gp = gpar(col = "darkgray", lwd = 1),
+        row_dend_width =  unit(2, "cm"),
+        column_names_gp = grid::gpar(fontsize = 7),
+        row_names_gp = grid::gpar(fontsize = 9))
+dev.off()
+
+## Sample level
+matrix <- as.matrix(fungi1[, c(12:52)])
+rownames(matrix) <- fungi1$Group
+
+# row_dend1 = as.dendrogram(hclust(dist(matrix)))
+
+pdf("Plots/Funguild/Ahalleri_Funguild_cluster_sample_05062022.pdf",
+    width = 12, height = 12)
+Heatmap(matrix,
+        cluster_columns = FALSE,
+        col = col_fun,
+        rect_gp = gpar(col = "darkgray", lwd = 1),
+        column_names_gp = grid::gpar(fontsize = 6),
+        row_names_gp = grid::gpar(fontsize = 4.5),
+        # row_km = 2,
+        row_dend_width =  unit(2, "cm"))
+dev.off()
+
+#### Selected guilds at treatment level ####
+subset.ratio <- func_ratio[, c(2,15,20,27,28,33,34,38, 42)]
+
+my_matrix1 <- as.matrix(subset.ratio[, c(1:9)])
+rownames(my_matrix1) <- func_ratio$Group
+
+pdf("Plots/Funguild/Ahalleri_Funguild_selected_guilds_cluster_treatment_05062022.pdf",
+    width = 7, height = 5)
+Heatmap(my_matrix1,
+        cluster_columns = FALSE,
+        col = col_fun,
+        rect_gp = gpar(col = "darkgray", lwd = 1),
+        row_dend_width =  unit(2, "cm"),
+        column_names_gp = grid::gpar(fontsize = 8),
+        row_names_gp = grid::gpar(fontsize = 8))
+dev.off()
+
+##### Selected guilds at sample level ####
+subset <- fungi1[, c(12,25,30,37,38,43,44,48,52)]
+
+matrix1 <- as.matrix(subset[, c(1:9)])
+rownames(matrix1) <- fungi1$Group
+
+
+pdf("Plots/Funguild/Ahalleri_Funguild_selected_guilds_cluster_sample_05062022.pdf",
+    width = 7, height = 8)
+Heatmap(matrix1,
+        cluster_columns = FALSE,
+        col = col_fun,
+        rect_gp = gpar(col = "darkgray", lwd = 1),
+        column_names_gp = grid::gpar(fontsize = 7),
+        row_names_gp = grid::gpar(fontsize = 5),
+        # row_km = 2,
+        row_dend_width =  unit(2, "cm"))
+dev.off()
