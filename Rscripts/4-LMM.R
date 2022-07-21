@@ -13,23 +13,24 @@ library(nlme)
 setwd("C:/Users/priya/Box/AZ_UA_Jan2022/2021_Ongoing_Projects/Ahalleri_Pot_Transplant/Data")
 
 # Import data files
-bac <- read.table("ahalleri_clonal_16S_Richness_02162022.txt", header = T, row.names = 1)
-fungi <- read.table("ahalleri_clonal_ITS_Richness_02162022.txt", header = T, row.names = 1)
+bac <- read.table("Data/ahalleri_clonal_16S_Richness_02162022.txt", header = T, row.names = 1)
+fungi <- read.table("Data/ahalleri_clonal_ITS_Richness_02162022.txt", header = T, row.names = 1)
 
 # Rename columns
-colnames(bac)[11] <- "Bac_Richness"
+colnames(bac)[12] <- "Bac_Richness"
 bac$Bac_Richness <- as.numeric(bac$Bac_Richness)
-colnames(bac)[12] <- "Bac_Shannon"
-colnames(bac)[13] <- "Bac_NMDS1"
-colnames(bac)[14] <- "Bac_NMDS2"
+colnames(bac)[13] <- "Bac_Shannon"
+colnames(bac)[14] <- "Bac_NMDS1"
+colnames(bac)[15] <- "Bac_NMDS2"
 
-colnames(fungi)[11] <- "Fungi_Richness"
+colnames(fungi)[12] <- "Fungi_Richness"
 fungi$Fungi_Richness <- as.numeric(fungi$Fungi_Richness)
-colnames(fungi)[12]  <- "Fungi_Shannon"
-colnames(fungi)[13] <- "Fungi_NMDS1"
-colnames(fungi)[14]  <- "Fungi_NMDS2"
+colnames(fungi)[13]  <- "Fungi_Shannon"
+colnames(fungi)[14] <- "Fungi_NMDS1"
+colnames(fungi)[15]  <- "Fungi_NMDS2"
 
 # Combine data sets
+## This applies when all the samples rows are in the same order in the two datasets
 dat <- bac
 dat$Fungi_Richness <- fungi$Fungi_Richness
 dat$Fungi_Shannon <- fungi$Fungi_Shannon
@@ -39,69 +40,57 @@ dat$Fungi_NMDS2 <- fungi$Fungi_NMDS2
 # Subset for only plant samples
 plant <- subset(dat, dat$Population != "Blank")
 
-# Linear mixed-effects model. Fixed effect: soil type; Random effect: ecotype;
+# Linear mixed-effects model. Fixed effect: Population (Site); Random effect: Site_type (M vs NM);
 ### Plants & Blank ####
 
 # Alpha diversity
-anova(lmer(Bac_Richness ~ Soil_type + (1|Ecotype), data = dat))
-anova(lmer(Bac_Shannon ~ Soil_type + (1|Ecotype), data = dat))
+anova(lmer(Bac_Richness ~ Population + (1|Site_type), data = dat))
+anova(lmer(Bac_Shannon ~ Population + (1|Site_type), data = dat))
 
-anova(lmer(Fungi_Richness ~ Soil_type+ (1|Ecotype), data = dat))
-anova(lmer(Fungi_Shannon ~ Soil_type + (1|Ecotype), data = dat))
+anova(lmer(Fungi_Richness ~ Population + (1|Site_type), data = dat))
+anova(lmer(Fungi_Shannon ~ Population + (1|Site_type), data = dat))
+
+## Fungal richness doesn't fit
 
 # Model R2
 # Alpha diversity
-r2(lmer(Bac_Richness ~ Soil_type + (1|Ecotype), data = dat))
-r2(lmer(Bac_Shannon ~ Soil_type + (1|Ecotype), data = dat))
+r2(lmer(Bac_Richness ~ Population + (1|Site_type), data = dat))
+r2(lmer(Bac_Shannon ~ Population + (1|Site_type), data = dat))
 
-r2(lmer(Fungi_Richness ~ Soil_type + (1|Ecotype), data = dat))
-r2(lmer(Fungi_Shannon ~ Soil_type + (1|Ecotype), data = dat))
+r2(lmer(Fungi_Richness ~ Population + (1|Site_type), data = dat))
+r2(lmer(Fungi_Shannon ~ Population + (1|Site_type), data = dat))
+
+## Fungal richness doesn't fit
 
 ### Only Plants ####
 
 # Alpha diversity
-anova(lmer(Bac_Richness ~ Soil_type + (1|Ecotype), data = plant))
-anova(lmer(Bac_Shannon ~ + Soil_type + (1|Ecotype), data = plant))
+anova(lmer(Bac_Richness ~ Population + (1|Site_type), data = plant))
+anova(lmer(Bac_Shannon ~ + Population + (1|Site_type), data = plant))
 
-anova(lmer(Fungi_Richness ~ Soil_type + (1|Ecotype), data = plant))
-anova(lmer(Fungi_Shannon ~ Soil_type + (1|Ecotype), data = plant))
+anova(lmer(Fungi_Richness ~ Population + (1|Site_type), data = plant))
+anova(lmer(Fungi_Shannon ~ Population + (1|Site_type), data = plant))
 
-# Model R2
-# Alpha diversity
-r2(lmer(Bac_Richness ~ Soil_type + (1|Ecotype), data = plant))
-r2(lmer(Bac_Shannon ~ Soil_type + (1|Ecotype), data = plant))
-
-r2(lmer(Fungi_Richness ~ Soil_type + (1|Ecotype), data = plant))
-r2(lmer(Fungi_Shannon ~ Soil_type + (1|Ecotype), data = plant))
-
-# Get slope values
-lmer(Bac_Richness ~ Soil_type + (1|Ecotype), data = plant)
-lmer(Bac_Shannon ~ Soil_type + (1|Ecotype), data = plant)
-
-lmer(Fungi_Richness ~ Soil_type + (1|Ecotype), data = plant)
-lmer(Fungi_Shannon ~ Soil_type + (1|Ecotype), data = plant)
-
-#### PL14 plants ####
-pl14 <- subset(plant, plant$Population_type == "NM_PL14_P")
-
-# Alpha diversity
-anova(lmer(Bac_Richness ~ Soil_type + (1|Ecotype), data = pl14))
-anova(lmer(Bac_Shannon ~ + Soil_type + (1|Ecotype), data = pl14))
-
-anova(lmer(Fungi_Richness ~ Soil_type + (1|Ecotype), data = pl14))
-anova(lmer(Fungi_Shannon ~ Soil_type + (1|Ecotype), data = pl14))
+## Fungal richness doesn't fit
 
 # Model R2
 # Alpha diversity
-r2(lmer(Bac_Richness ~ Soil_type + (1|Ecotype), data = plant))
-r2(lmer(Bac_Shannon ~ Soil_type + (1|Ecotype), data = plant))
+r2(lmer(Bac_Richness ~ Population + (1|Site_type), data = plant))
+r2(lmer(Bac_Shannon ~ Population + (1|Site_type), data = plant))
 
-r2(lmer(Fungi_Richness ~ Soil_type + (1|Ecotype), data = plant))
-r2(lmer(Fungi_Shannon ~ Soil_type + (1|Ecotype), data = plant))
+r2(lmer(Fungi_Richness ~ Population + (1|Site_type), data = plant))
+r2(lmer(Fungi_Shannon ~ Population + (1|Site_type), data = plant))
+
+## Fungal richness doesn't fit
 
 # Get slope values
-lmer(Bac_Richness ~ Soil_type + (1|Ecotype), data = plant)
-lmer(Bac_Shannon ~ Soil_type + (1|Ecotype), data = plant)
+lmer(Bac_Richness ~ Population + (1|Site_type), data = plant)
+lmer(Bac_Shannon ~ Population + (1|Site_type), data = plant)
 
-lmer(Fungi_Richness ~ Soil_type + (1|Ecotype), data = plant)
-lmer(Fungi_Shannon ~ Soil_type + (1|Ecotype), data = plant)
+lmer(Fungi_Richness ~ Population + (1|Site_type), data = plant)
+lmer(Fungi_Shannon ~ Population + (1|Site_type), data = plant)
+
+
+r2(lmer(Fungi_Richness ~ Soil_type + (1|Site_type), data = plant))
+r2(lmer(Fungi_Shannon ~ Soil_type + (1|Site_type), data = plant))
+

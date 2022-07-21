@@ -38,12 +38,22 @@ plant$Soil_type <- factor(plant$Soil_type,
 plant$Pop <- factor(plant$Pop,
                     levels = c("PL14", "PL35", "PL22", "PL27"))
 
-plant.sub <- plant[,c(1:10,12:14,16,18,19,21,22,35,36,37)]
+plant.sub <- plant[,c(1:6,7:10,12:14,16,18,19,21:24)]
 
-plant.center <- sapply(plant.sub[,7:18], 
-                       function(x) scale(x, scale = FALSE))
+# Create Vector of Column Max and Min Values
+maxs <- apply(plant.sub[,7:18], 2, max)
+mins <- apply(plant.sub[,7:18], 2, min)
 
-plant.center <- cbind(plant.sub[,1:6], plant.center, plant.sub[,19:21])
+# Use scale() and convert the resulting matrix to a data frame
+scaled.data <- as.data.frame(scale(plant.sub[,7:18], 
+                                   center = mins, 
+                                   scale = maxs-mins))
+
+plant.center <- cbind(plant.sub[,1:6], scaled.data, plant.sub[,19:20])
+
+
+# plant.center <- sapply(plant.sub[,7:18], 
+#                        function(x) scale(x, scale = FALSE))
 
 #### All sets: names for calculations columns ####
 names.set <- c("Pop", "Soil_type",           
@@ -96,13 +106,14 @@ for(i in 1:12){
                       ymax = se1[,i + 2]  + se1[, i + 14]),
                   width = 0.1) +
     geom_point(size = 2, shape = 19) +
+    ylim(0, 1) +
     ylab(colnames_se1[i]) +
     scale_colour_manual(values = c("blue", "red"),
                         breaks = c("PL14", "PL22"))
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1))
   
-  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered/pop_group/set1/reactn_norm_set1_", colnames_se1[i], "_05022022.pdf"),
+  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered_0_1/pop_group/set1/reactn_norm_set1_", colnames_se1[i], "_05262022.pdf"),
          plot = plant_plots1[[i]],
          width = 5,
          height = 4,
@@ -113,7 +124,7 @@ for(i in 1:12){
 p2 <- c('PL14', 'PL27')
 s2 <- c('NM_PL14_S', 'M_PL27_S')
 
-set2 <- plant.sub %>%
+set2 <- plant.center %>%
   filter(Pop %in% p2) %>%
   filter(Soil_type %in% s2)
 
@@ -151,13 +162,14 @@ for(i in 1:12){
                       ymax = se2[,i + 2]  + se2[, i + 14]),
                   width = 0.1) +
     geom_point(size = 2, shape = 19) +
+    ylim(0, 1) +
     ylab(colnames_se2[i]) +
     scale_colour_manual(values = c("blue", "#FF66B2"),
                         breaks = c("PL14", "PL27"))
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1))
-  
-  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered/pop_group/set2/reactn_norm_set2_", colnames_se2[i], "_05022022.pdf"),
+
+  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered_0_1/pop_group/set2/reactn_norm_set2_", colnames_se2[i], "_05262022.pdf"),
          plot = plant_plots2[[i]],
          width = 5,
          height = 4,
@@ -168,7 +180,7 @@ for(i in 1:12){
 p3 <- c('PL14', 'PL35')
 s3 <- c('NM_PL14_S', 'NM_PL35_S')
 
-set3 <- plant.sub %>%
+set3 <- plant.center %>%
   filter(Pop %in% p3) %>%
   filter(Soil_type %in% s3)
 
@@ -206,13 +218,14 @@ for(i in 1:12){
                       ymax = se3[,i + 2]  + se3[, i + 14]),
                   width = 0.1) +
     geom_point(size = 2, shape = 19) +
+    ylim(0, 1) +
     ylab(colnames_se3[i]) +
     scale_colour_manual(values = c("blue", "#66B2FF"),
                         breaks = c("PL14", "PL35"))
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1))
-  
-  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered/pop_group/set3/reactn_norm_set3_", colnames_se3[i], "_05022022.pdf"),
+
+  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered_0_1/pop_group/set3/reactn_norm_set3_", colnames_se3[i], "_05262022.pdf"),
          plot = plant_plots3[[i]],
          width = 5,
          height = 4,
@@ -223,7 +236,7 @@ for(i in 1:12){
 p4 <- c('PL35', 'PL22')
 s4 <- c('NM_PL35_S', 'M_PL22_S')
 
-set4 <- plant.sub %>%
+set4 <- plant.center %>%
   filter(Pop %in% p4) %>%
   filter(Soil_type %in% s4)
 
@@ -261,13 +274,14 @@ for(i in 1:12){
                       ymax = se4[,i + 2]  + se4[, i + 14]),
                   width = 0.1) +
     geom_point(size = 2, shape = 19) +
+    ylim(0, 1) +
     ylab(colnames_se4[i]) +
     scale_colour_manual(values = c("#66B2FF", "red"),
                         breaks = c("PL35", "PL22"))
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1))
   
-  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered/pop_group/set4/reactn_norm_set4_", colnames_se4[i], "_05022022.pdf"),
+  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered_0_1/pop_group/set4/reactn_norm_set4_", colnames_se4[i], "_05262022.pdf"),
          plot = plant_plots4[[i]],
          width = 5,
          height = 4,
@@ -278,7 +292,7 @@ for(i in 1:12){
 p5 <- c('PL35', 'PL27')
 s5 <- c('NM_PL35_S', 'M_PL27_S')
 
-set5 <- plant.sub %>%
+set5 <- plant.center %>%
   filter(Pop %in% p5) %>%
   filter(Soil_type %in% s5)
 
@@ -316,13 +330,14 @@ for(i in 1:12){
                       ymax = se5[,i + 2]  + se5[, i + 14]),
                   width = 0.1) +
     geom_point(size = 2, shape = 19) +
+    ylim(0, 1) +
     ylab(colnames_se5[i]) +
     scale_colour_manual(values = c("#66B2FF", "#FF66B2"),
                         breaks = c("PL35", "PL27"))
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1))
 
-  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered/pop_group/set5/reactn_norm_set5_", colnames_se5[i], "_05022022.pdf"),
+  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered_0_1/pop_group/set5/reactn_norm_set5_", colnames_se5[i], "_05262022.pdf"),
          plot = plant_plots5[[i]],
          width = 5,
          height = 4,
@@ -333,7 +348,7 @@ for(i in 1:12){
 p6 <- c('PL22', 'PL27')
 s6 <- c('M_PL22_S', 'M_PL27_S')
 
-set6 <- plant.sub %>%
+set6 <- plant.center %>%
   filter(Pop %in% p6) %>%
   filter(Soil_type %in% s6)
 
@@ -371,13 +386,14 @@ for(i in 1:12){
                       ymax = se6[,i + 2]  + se6[, i + 14]),
                   width = 0.1) +
     geom_point(size = 2, shape = 19) +
+    ylim(0, 1) +
     ylab(colnames_se6[i]) +
     scale_colour_manual(values = c("red", "#FF66B2"),
                         breaks = c("PL22", "PL27"))
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1))
   
-  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered/pop_group/set6/reactn_norm_set6_", colnames_se6[i], "_05022022.pdf"),
+  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered_0_1/pop_group/set6/reactn_norm_set6_", colnames_se6[i], "_05262022.pdf"),
          plot = plant_plots6[[i]],
          width = 5,
          height = 4,
@@ -397,7 +413,7 @@ for(i in 1:12){
                               plant_plots6[[i]],
                               ncol = 3)
 
-  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered/pop_group/pop_combined/centered_", colnames_com[i], "_05022022.pdf"),
+  ggsave(filename = paste0("Plots/PlantChem/Reaction_norms/centered_0_1/pop_group/pop_combined/centered_", colnames_com[i], "_05262022.pdf"),
          plot = com_plots[[i]],
          width = 12,
          height = 5,

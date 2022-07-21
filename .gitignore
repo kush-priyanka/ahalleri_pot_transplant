@@ -1,33 +1,24 @@
-# Suppress R files
-.Rproj.user/
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.txt
 ahalleri_pot.Rproj
-*.txt
-*.Rhistory
 
-# Suppress the following folders
-16S_analysis_PK
-16S_prelim_DL
-Chem_analysis_new
-Chem_analysis_old_wrong
-Data
-DNA_extraction
-Functional_Analysis
-Github_Rscripts
-ITS_analysis_PK
-Plots
-Test_Homegenity_old_wrong
-Results
-Soil_Chem_Analysis_ABK
-Arabidopsis_clonal_pot_ABK
-
-# Suppress the file
-Time_Log_Spring2022.xlsx
 Enzymes_function.xlsx
+Time_Log_Spring2022.xlsx
 
-#Suppress R scrips
-Rscripts/8-Funguild.R
-Rscripts/12-Reaction_Norms_test.R
+Rscripts/ABK_Kruskal_Wallis_test.txt
+Rscripts/4-LMMb.R
+16S_analysis_PK/
+16S_prelim_DL/
+Arabidopsis_clonal_pot_ABK/
+Chem_analysis_new/
+DNA_extraction/
+Data/
+Functional_Analysis/
+ITS_analysis_PK/
+Old_wrong_files/
+Plots/
+Results/
 
-
-Suppress all pdf files
-*.pdf
