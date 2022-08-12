@@ -9,7 +9,7 @@ library(dplyr)
 chem <- read.table("Data/SoilPlant_RGR_DataClean_04062022.txt", 
                    header=T, row.names=1, sep="\t")
 
-## Subset raw soil data
+#### Subset raw soil data ####
 soil <- chem[, c(1:21, 50)]
 soil_woblanks <- subset(soil, soil$Population != "Blank")
 
@@ -46,7 +46,7 @@ soil_norm_woblanks$Level <- with(soil_norm_woblanks, ifelse(soil_norm_woblanks$G
                                                 ifelse(soil_norm_woblanks$Group == "M_PL27_S_PL35_P", 'L14',
                                                 ifelse(soil_norm_woblanks$Group == "M_PL27_S_PL22_P", 'L15','L16'))))))))))))))))
                                                     
-#### Matrix for sig letters Soil ####
+#### KW: Soil parameters ####
 kw.matrix <- matrix(data = NA, nrow = 16, ncol = 13)
 rownames(kw.matrix) = c('L1', 'L2', 'L3','L4',
                         'L5','L6', 'L7', 'L8', 
@@ -61,7 +61,18 @@ for(i in 7:19)
   bla.group.ordered <- bla.groups[order(as.character(row.names(bla.groups))),]
   bla.group.ordered <- bla.group.ordered[c(1,9:16,2:8),]
   kw.matrix[, i - 6] <- as.character(bla.group.ordered[,2])
-  print(bla.group.ordered)
+  #print(bla.group.ordered)
+}
+
+#### WX: M vs NM Soil parameters ####
+wx.matrix <- matrix(data = NA, nrow = 1, ncol = 13)
+colnames(wx.matrix) = colnames(soil_norm_woblanks[, 7:19])
+
+for(i in 7:19)
+{
+  wx <- wilcox.test(soil_norm_woblanks[,i] ~ soil_norm_woblanks$Site_type, 
+                    data = soil_norm_woblanks, paired = FALSE)
+  wx.matrix[, i - 6] <- wx$p.value
 }
 
 ### Assign max value for sig letters position ###
@@ -70,13 +81,16 @@ names <- c("Soil_type","Population_type", "Acid_Phosphatase_yloc","Alkaline_Phos
            "Cd_soil_yloc", "Pb_soil_yloc",  "Zn_soil_yloc" ,  "pH_soil_yloc",               
            "Ammonium_soil_yloc" , "Nitrate_soil_yloc", "WHC_Soil_yloc", "Basal_respiration_Soil_yloc", 
            "C_mic_Soil_yloc",
-           "Acid_Phosphatase_sig","Alkaline_Phosphatasesig","B_glucosidase_sig" ,"Arylsulfatase_sig",
+           "Acid_Phosphatase_sig","Alkaline_Phosphatase_sig","B_glucosidase_sig" ,"Arylsulfatase_sig",
            "Cd_soil_sig", "Pb_soil_sig",  "Zn_soil_sig" ,  "pH_soil_sig",               
            "Ammonium_soil_sig" , "Nitrate_soil_sig", "WHC_Soil_sig", "Basal_respiration_Soil_sig", 
            "C_mic_Soil_sig")
 
 sig <- data.frame(matrix(nrow = 16, ncol = 28))
-rownames(sig) <- c(1:16)
+rownames(sig) = c('L1', 'L2', 'L3','L4',
+                        'L5','L6', 'L7', 'L8', 
+                        'L9', 'L10', 'L11', 'L12', 
+                        'L13', 'L14','L15', 'L16')
 colnames(sig) <- names
 
 sig$Population_type <- as.character(c("NM_PL14_P","NM_PL35_P","M_PL22_P","M_PL27_P",
@@ -167,7 +181,7 @@ plant_norm$Level <- with(plant_norm, ifelse(plant_norm$Group == "NM_PL14_S_PL14_
                                                                                                                                  ifelse(plant_norm$Group == "M_PL27_S_PL35_P", 'L14',
                                                                                                                                         ifelse(plant_norm$Group == "M_PL27_S_PL22_P", 'L15','L16'))))))))))))))))
 
-#### Matrix for sig letters Plant: Soill_type ####
+#### KW: Plant parameters ####
 kw.matrix1 <- matrix(data = NA, nrow = 16, ncol = 16)
 rownames(kw.matrix1) = c('L1', 'L2', 'L3','L4',
                          'L5','L6', 'L7', 'L8', 
@@ -183,6 +197,17 @@ for(i in 7:22)
   bla.group.ordered1 <- bla.group.ordered1[c(1,9:16,2:8),]
   kw.matrix1[, i - 6] <- as.character(bla.group.ordered1[,2])
   print(bla.group.ordered1)
+}
+
+#### WX: M vs NM Plant parameters ####
+wx.matrix1 <- matrix(data = NA, nrow = 1, ncol = 16)
+colnames(wx.matrix1) = colnames(plant_norm[, 7:22])
+
+for(i in 7:22)
+{
+  wx1 <- wilcox.test(plant_norm[,i] ~ plant_norm$Site_type, 
+                    data = plant_norm, paired = FALSE)
+  wx.matrix1[, i - 6] <- wx1$p.value
 }
 
 ### Assign max value for sig letters position ###

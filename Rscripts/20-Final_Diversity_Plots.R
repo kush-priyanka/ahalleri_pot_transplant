@@ -39,7 +39,7 @@ div$Level <- with(div, ifelse(div$Soil_type == "NM_PL14_S" & div$Population_type
 
 div <- div[,c(1:8, 11:12, 9:10, 13:15)]
 
-#### Matrix for sig letters bac and fungi ####
+#### KW: bac and fungi ####
 kw.matrix <- matrix(data = NA, nrow = 16, ncol = 4)
 rownames(kw.matrix) = c('L1', 'L2', 'L3','L4',
                         'L5','L6', 'L7', 'L8', 
@@ -57,6 +57,16 @@ for(i in 7:10)
   print(bla.group.ordered)
 }
 
+#### WX: M vs NM diversity ####
+wx.matrix <- matrix(data = NA, nrow = 1, ncol = 4)
+colnames(wx.matrix) = colnames(div[, 7:10])
+
+for(i in 7:10)
+{
+  wx <- wilcox.test(div[,i] ~ div$Site_type, 
+                     data = div, paired = FALSE)
+  wx.matrix[, i - 6] <- wx$p.value
+}
 ### ANOVA###
 # for(i in 7:10)
 # {
