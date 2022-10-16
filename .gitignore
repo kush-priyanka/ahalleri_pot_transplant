@@ -10,6 +10,7 @@ Time_Log_Spring2022.xlsx
 
 Rscripts/ABK_Kruskal_Wallis_test.txt
 Rscripts/4-LMMb.R
+Rscripts/merge.R
 16S_analysis_PK/
 16S_prelim_DL/
 Arabidopsis_clonal_pot_ABK/
@@ -21,4 +22,7 @@ ITS_analysis_PK/
 Old_wrong_files/
 Plots/
 Results/
+Manuscript_Figures_Tables/
+1-s2.0-S0048969721050816-mmc1 (1).docx
+Figures_R/
 
